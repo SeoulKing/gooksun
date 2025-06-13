@@ -15,7 +15,7 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'taebaek',
     name: '태백',
-    x: 450,  // 오른쪽 위
+    x: 410,  // 450 → 410 (윤곽선 안으로)
     y: 200,  
     radius: 20,
     owner: 'neutral',
@@ -45,9 +45,9 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'redbase',
     name: '세상',
-    x: 510,  // 맨 오른쪽
-    y: 320,  
-    radius: 28,  // 35 → 28로 축소
+    x: 300,  // 제주도 옆 (중앙 하단)
+    y: 520,  // 부산보다 아래
+    radius: 28,
     owner: 'red',
     troopCount: 30,
     baseGrowthRate: 3
@@ -65,7 +65,7 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'gapyeong',
     name: '가평',
-    x: 340,  // 서울 오른쪽 위
+    x: 320,  // 340 → 320 (남양주와 거리 확보)
     y: 150,  
     radius: 20,
     owner: 'neutral',
@@ -115,8 +115,8 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'namyangju',
     name: '남양주',
-    x: 360,  // 서울 오른쪽
-    y: 180,  
+    x: 370,  // 360 → 370 (가평과 거리 확보)
+    y: 170,  // 180 → 170 (가평과 세로 간격 확보)
     radius: 20,
     owner: 'neutral',
     troopCount: 5,
@@ -169,19 +169,27 @@ export const SKILLS: Skill[] = [
     }
   },
   {
-    id: 'resourceFlow',
-    name: '💰 풍성한 복',
-    description: '모든 자원 흐름 +50%',
-    apply: (player) => {
-      player.growthRateMultiplier += 0.5;
-    }
-  },
-  {
     id: 'expBoost',
     name: '📚 지혜 증가',
     description: '모든 경험치 획득 +50%',
     apply: (_player) => {
       // 이 효과는 경험치 획득 시 적용됩니다
+    }
+  },
+  {
+    id: 'faithDefense',
+    name: '🛡️ 믿음의 방어',
+    description: '내 지역은 세상이 2개 공격해야 믿음 1개 감소',
+    apply: (player) => {
+      player.defenseMultiplier = 2;
+    }
+  },
+  {
+    id: 'transmissionSpeed',
+    name: '⚡ 빠른 전도',
+    description: '믿음 전송 간격 50% 단축',
+    apply: (player) => {
+      player.transmissionSpeedMultiplier = 0.5;
     }
   }
 ];

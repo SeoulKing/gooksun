@@ -17,6 +17,8 @@ export interface Player {
   growthRateMultiplier: number;
   productionRateMultiplier: number;
   attackPowerMultiplier: number;
+  defenseMultiplier: number;
+  transmissionSpeedMultiplier: number;
   maxConnectionDistance: number;
   maxConnectionsPerRegion: number;
 }

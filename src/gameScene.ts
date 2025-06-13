@@ -52,6 +52,8 @@ export class GameScene extends Phaser.Scene {
         growthRateMultiplier: 1,
         productionRateMultiplier: 1,
         attackPowerMultiplier: 1,
+        defenseMultiplier: 1,
+        transmissionSpeedMultiplier: 1,
         maxConnectionDistance: GAME_CONFIG.MAX_CONNECTION_DISTANCE,
         maxConnectionsPerRegion: 1
       },
@@ -97,13 +99,13 @@ export class GameScene extends Phaser.Scene {
     graphics.lineTo(190, 430);  // 목포 근처
     
     // 남해안 (남쪽) - 아래쪽 여백 확보  
-    graphics.lineTo(250, 500);  // 전남 남해안
-    graphics.lineTo(330, 520);  // 경남 남해안 중부
-    graphics.lineTo(410, 510);  // 경남 남해안 동부
-    graphics.lineTo(460, 490);  // 부산 근처
-    graphics.lineTo(480, 460);  // 울산 근처
+    graphics.lineTo(250, 480);  // 전남 남해안
+    graphics.lineTo(330, 490);  // 경남 남해안 중부
+    graphics.lineTo(410, 480);  // 경남 남해안 동부
+    graphics.lineTo(460, 470);  // 부산 근처
+    graphics.lineTo(480, 440);  // 울산 근처
     
-    // 동해안 (동쪽) - 세상(적군본부)이 밖에 있도록 조정
+    // 동해안 (동쪽) - 오른쪽 경계
     graphics.lineTo(470, 400);  // 동해남부
     graphics.lineTo(460, 340);  // 동해중부
     graphics.lineTo(450, 280);  // 동해북부  
@@ -124,8 +126,8 @@ export class GameScene extends Phaser.Scene {
 
     // 제주도 추가 (위치 조정)
     graphics.fillStyle(0xD2B48C);
-    graphics.fillEllipse(250, 600, 30, 15); // 크기도 조금 줄임
-    graphics.strokeEllipse(250, 600, 30, 15);
+    graphics.fillEllipse(250, 580, 30, 15); // 제주도를 더 아래로
+    graphics.strokeEllipse(250, 580, 30, 15);
   }
 
   private createRegions() {
@@ -447,13 +449,14 @@ export class GameScene extends Phaser.Scene {
     
     if (totalTroopsToSend <= 0) return;
     
+    const currentTime = Date.now();
     const attack: Attack = {
       fromRegionId: fromRegion.id,
       toRegionId: toRegion.id,
       troopCount: totalTroopsToSend,
       progress: 0,
       duration: duration,
-      lastTroopSendTime: Date.now() - GAME_CONFIG.TROOP_SEND_INTERVAL,
+      lastTroopSendTime: currentTime, // 시작 시간을 현재 시간으로 설정
       totalTroopsToSend: totalTroopsToSend,
       troopsSent: 0,
       movingTroops: []
@@ -465,7 +468,7 @@ export class GameScene extends Phaser.Scene {
       fromRegionId: fromRegion.id,
       toRegionId: toRegion.id,
       isActive: true,
-      createdTime: Date.now()
+      createdTime: currentTime
     };
     
     this.gameState.connections.push(connection);
@@ -515,8 +518,8 @@ export class GameScene extends Phaser.Scene {
     const playerRegions = Array.from(this.gameState.regions.values())
       .filter(r => r.owner === 'player');
     
-    const isLateGame = playerRegions.length >= 5;
-    const newInterval = isLateGame ? 2000 : 4000; // 후반부: 2초, 초반부: 4초
+    const isLateGame = playerRegions.length >= 4; // 4개 이상부터 후반부
+    const newInterval = isLateGame ? 1500 : 3000; // 후반부: 1.5초, 초반부: 3초
     
     // 현재 타이머와 간격이 다르면 타이머 재생성
     if (this._aiTimer.delay !== newInterval) {
@@ -532,7 +535,7 @@ export class GameScene extends Phaser.Scene {
 
   private aiTurn() {
     const redRegions = Array.from(this.gameState.regions.values())
-      .filter(r => r.owner === 'red' && r.troopCount > 5);
+      .filter(r => r.owner === 'red' && r.troopCount > 3); // 최소 병력 3으로 낮춤
     
     const playerRegions = Array.from(this.gameState.regions.values())
       .filter(r => r.owner === 'player');
@@ -542,12 +545,12 @@ export class GameScene extends Phaser.Scene {
     
     if (redRegions.length === 0) return;
     
-    // 게임 후반부 판단 (플레이어가 5개 이상 지역 점령 시)
-    const isLateGame = playerRegions.length >= 5;
+    // 게임 후반부 판단 (플레이어가 4개 이상 지역 점령 시로 낮춤)
+    const isLateGame = playerRegions.length >= 4;
     
     // 후반부에는 더 공격적으로 변함
-    const minTroopCount = isLateGame ? 3 : 5;
-    const attackRatio = isLateGame ? 0.8 : 0.6; // 후반부에는 80% 병력 투입
+    const minTroopCount = isLateGame ? 2 : 4; // 후반부에는 2개만 있어도 공격
+    const attackRatio = isLateGame ? 0.9 : 0.7; // 후반부에는 90% 병력 투입
     
     for (const attackerRegion of redRegions) {
       if (attackerRegion.troopCount < minTroopCount) continue;
@@ -562,42 +565,59 @@ export class GameScene extends Phaser.Scene {
       let targetRegions: Region[] = [];
       
       if (isLateGame) {
-        // 후반부: 플레이어 지역을 우선 타겟
-        const playerTargets = playerRegions.filter(r => 
-          this.getDistance(attackerRegion, r) <= GAME_CONFIG.MAX_CONNECTION_DISTANCE * 1.5
+        // 후반부: 플레이어 지역만 타겟 (중립 지역 무시)
+        targetRegions = playerRegions.filter(r => 
+          this.getDistance(attackerRegion, r) <= GAME_CONFIG.MAX_CONNECTION_DISTANCE * 2 // 연결 거리 2배로 확장
         );
-        targetRegions = playerTargets.length > 0 ? playerTargets : neutralRegions;
+        
+        // 플레이어 지역이 없으면 가장 가까운 플레이어 지역 공격
+        if (targetRegions.length === 0 && playerRegions.length > 0) {
+          const closestPlayer = playerRegions.reduce((closest, current) => 
+            this.getDistance(attackerRegion, current) < this.getDistance(attackerRegion, closest) 
+              ? current : closest
+          );
+          targetRegions = [closestPlayer];
+        }
       } else {
-        // 초반부: 중립 지역 우선, 플레이어 견제
-        targetRegions = [...neutralRegions, ...playerRegions];
+        // 초반부: 중립 지역 우선, 하지만 플레이어도 견제
+        const nearbyNeutral = neutralRegions.filter(r => 
+          this.getDistance(attackerRegion, r) <= GAME_CONFIG.MAX_CONNECTION_DISTANCE
+        );
+        const nearbyPlayer = playerRegions.filter(r => 
+          this.getDistance(attackerRegion, r) <= GAME_CONFIG.MAX_CONNECTION_DISTANCE
+        );
+        
+        // 30% 확률로 플레이어 공격, 70% 확률로 중립 공격
+        if (nearbyPlayer.length > 0 && Math.random() < 0.3) {
+          targetRegions = nearbyPlayer;
+        } else {
+          targetRegions = nearbyNeutral.length > 0 ? nearbyNeutral : nearbyPlayer;
+        }
       }
       
       if (targetRegions.length === 0) continue;
       
       // 타겟 선정 로직 개선
       let target: Region;
-      if (isLateGame) {
-        // 후반부: 가장 가까운 플레이어 지역 우선
+      if (isLateGame && targetRegions.some(r => r.owner === 'player')) {
+        // 후반부: 가장 약한 플레이어 지역 우선
         const playerTargets = targetRegions.filter(r => r.owner === 'player');
-        if (playerTargets.length > 0) {
-          target = playerTargets.reduce((closest, current) => 
-            this.getDistance(attackerRegion, current) < this.getDistance(attackerRegion, closest) 
-              ? current : closest
-          );
-        } else {
-          target = targetRegions[Math.floor(Math.random() * targetRegions.length)];
-        }
-      } else {
-        // 초반부: 약한 지역 우선
-        target = targetRegions.reduce((weakest, current) => 
+        target = playerTargets.reduce((weakest, current) => 
           current.troopCount < weakest.troopCount ? current : weakest
         );
+      } else {
+        // 초반부: 가장 가까운 약한 지역
+        target = targetRegions.reduce((best, current) => {
+          const currentScore = current.troopCount - this.getDistance(attackerRegion, current) * 0.1;
+          const bestScore = best.troopCount - this.getDistance(attackerRegion, best) * 0.1;
+          return currentScore < bestScore ? current : best;
+        });
       }
       
-      // 공격 가능성 판단
+      // 공격 가능성 판단 - 후반부에는 매우 공격적
       const shouldAttack = isLateGame ? 
-        attackerRegion.troopCount > target.troopCount * 0.7 : // 후반부: 더 공격적
-        attackerRegion.troopCount > target.troopCount;        // 초반부: 신중함
+        attackerRegion.troopCount >= target.troopCount * 0.5 : // 후반부: 50%만 있어도 공격
+        attackerRegion.troopCount > target.troopCount * 0.8;   // 초반부: 80% 우위 필요
       
       if (shouldAttack) {
         const distance = this.getDistance(attackerRegion, target);
@@ -605,13 +625,14 @@ export class GameScene extends Phaser.Scene {
         const totalTroopsToSend = Math.floor((attackerRegion.troopCount - 1) * attackRatio);
         
         if (totalTroopsToSend > 0) {
+          const currentTime = Date.now();
           const attack: Attack = {
             fromRegionId: attackerRegion.id,
             toRegionId: target.id,
             troopCount: totalTroopsToSend,
             progress: 0,
             duration: duration,
-            lastTroopSendTime: Date.now() - GAME_CONFIG.TROOP_SEND_INTERVAL,
+            lastTroopSendTime: currentTime,
             totalTroopsToSend: totalTroopsToSend,
             troopsSent: 0,
             movingTroops: []
@@ -623,12 +644,12 @@ export class GameScene extends Phaser.Scene {
             fromRegionId: attackerRegion.id,
             toRegionId: target.id,
             isActive: true,
-            createdTime: Date.now()
+            createdTime: currentTime
           };
           
           this.gameState.connections.push(connection);
           
-          // 후반부에는 한 번에 여러 공격 허용
+          // 후반부에는 한 번에 여러 공격 허용, 초반부는 하나씩
           if (!isLateGame) break;
         }
       }
@@ -652,20 +673,19 @@ export class GameScene extends Phaser.Scene {
       const toRegion = this.gameState.regions.get(attack.toRegionId);
       if (!fromRegion || !toRegion) return false;
       
-      // 5초 시간 제한 확인
-      const attackStartTime = attack.lastTroopSendTime - GAME_CONFIG.TROOP_SEND_INTERVAL;
-      const elapsedTime = currentTime - attackStartTime;
+      // 5초 시간 제한 확인 - 공격 시작부터 5초
+      const elapsedTime = currentTime - attack.lastTroopSendTime;
       if (elapsedTime >= GAME_CONFIG.MAX_ATTACK_DURATION) {
         return false; // 5초 경과 시 공격 종료
       }
       
-      // 개별 믿음 전송
-      if (currentTime - attack.lastTroopSendTime >= GAME_CONFIG.TROOP_SEND_INTERVAL) {
+      // 개별 믿음 전송 - 첫 번째 전송 이후부터 0.8초 간격
+      if (attack.troopsSent === 0) {
+        // 첫 번째 믿음 즉시 전송
         if (attack.troopCount > 0 && fromRegion.troopCount > 1) {
           fromRegion.troopCount -= 1;
           attack.troopCount -= 1;
           attack.troopsSent += 1;
-          attack.lastTroopSendTime = currentTime;
           
           const newTroop: MovingTroop = {
             id: `${attack.fromRegionId}_${attack.toRegionId}_${Date.now()}`,
@@ -681,6 +701,38 @@ export class GameScene extends Phaser.Scene {
           };
           
           this.gameState.movingTroops.push(newTroop);
+        }
+      } else {
+        // 전송 간격 계산 - 플레이어면 전송 속도 적용
+        const baseInterval = GAME_CONFIG.TROOP_SEND_INTERVAL;
+        const actualInterval = fromRegion.owner === 'player' ? 
+          baseInterval * this.gameState.player.transmissionSpeedMultiplier : 
+          baseInterval;
+        
+        const nextSendTime = attack.lastTroopSendTime + attack.troopsSent * actualInterval;
+        
+        if (currentTime - nextSendTime >= actualInterval) {
+          // 이후 믿음들은 계산된 간격으로 전송
+          if (attack.troopCount > 0 && fromRegion.troopCount > 1) {
+            fromRegion.troopCount -= 1;
+            attack.troopCount -= 1;
+            attack.troopsSent += 1;
+            
+            const newTroop: MovingTroop = {
+              id: `${attack.fromRegionId}_${attack.toRegionId}_${Date.now()}`,
+              fromRegionId: attack.fromRegionId,
+              toRegionId: attack.toRegionId,
+              x: fromRegion.x,
+              y: fromRegion.y,
+              targetX: toRegion.x,
+              targetY: toRegion.y,
+              speed: GAME_CONFIG.ATTACK_SPEED,
+              hasArrived: false,
+              owner: fromRegion.owner as 'player' | 'red'
+            };
+            
+            this.gameState.movingTroops.push(newTroop);
+          }
         }
       }
       
@@ -751,13 +803,26 @@ export class GameScene extends Phaser.Scene {
     
     const defenderTroops = Math.floor(toRegion.troopCount);
     let attackPower = 1;
+    let defensePower = 1;
+    
     if (troop.owner === 'player') {
       attackPower = this.gameState.player.attackPowerMultiplier;
     }
     
-    if (defenderTroops > attackPower) {
-      toRegion.troopCount -= attackPower;
+    // 플레이어 지역이 방어할 때 defenseMultiplier 적용
+    if (toRegion.owner === 'player' && troop.owner === 'red') {
+      defensePower = this.gameState.player.defenseMultiplier;
+    }
+    
+    // 방어 시 실제 방어력 = 방어자 병력 * 방어 배수
+    const effectiveDefense = defenderTroops * defensePower;
+    
+    if (effectiveDefense > attackPower) {
+      // 방어 성공 - 공격력만큼 방어력에서 차감
+      const actualDamage = attackPower / defensePower;
+      toRegion.troopCount -= actualDamage;
     } else {
+      // 공격 성공 - 지역 점령
       const previousOwner = toRegion.owner;
       toRegion.owner = troop.owner;
       toRegion.troopCount = 1;
