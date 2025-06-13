@@ -85,47 +85,47 @@ export class GameScene extends Phaser.Scene {
     graphics.lineStyle(4, 0x8B7D6B); // 어두운 베이지
     graphics.fillStyle(0xE6E6C2); // 연한 베이지
     
-    // 한국 지도 남한 윤곽선 (모바일 최적화 - 비율 0.66 적용)
+    // 한국 지도 남한 윤곽선 (모바일 최적화 - 모든 지역이 내부에 위치)
     graphics.beginPath();
     
-    // 서해안 (서쪽)
-    graphics.moveTo(230, 165);  // 350 * 0.66, 250 * 0.66
-    graphics.lineTo(210, 200);  // 320 * 0.66, 300 * 0.66
-    graphics.lineTo(205, 250);  // 310 * 0.66, 380 * 0.66
-    graphics.lineTo(220, 300);  // 330 * 0.66, 450 * 0.66
-    graphics.lineTo(230, 345);  // 350 * 0.66, 520 * 0.66
-    graphics.lineTo(250, 385);  // 380 * 0.66, 580 * 0.66
+    // 서해안 (서쪽) - 왼쪽 여백 확보
+    graphics.moveTo(150, 120);  // 시작점
+    graphics.lineTo(140, 180);  // 서해안 상부
+    graphics.lineTo(130, 240);  // 서해안 중부
+    graphics.lineTo(140, 300);  // 서해안 남부
+    graphics.lineTo(160, 360);  // 서해안 하부
+    graphics.lineTo(180, 420);  // 목포 근처
     
-    // 남해안 (남쪽)
-    graphics.lineTo(300, 410);  // 450 * 0.66, 620 * 0.66
-    graphics.lineTo(365, 430);  // 550 * 0.66, 650 * 0.66
-    graphics.lineTo(430, 425);  // 650 * 0.66, 640 * 0.66
-    graphics.lineTo(475, 410);  // 720 * 0.66, 620 * 0.66
-    graphics.lineTo(515, 390);  // 780 * 0.66, 590 * 0.66
+    // 남해안 (남쪽) - 아래쪽 여백 확보  
+    graphics.lineTo(240, 480);  // 전남 남해안
+    graphics.lineTo(320, 500);  // 경남 남해안 중부
+    graphics.lineTo(400, 490);  // 경남 남해안 동부
+    graphics.lineTo(470, 470);  // 부산 근처
+    graphics.lineTo(500, 440);  // 울산 근처
     
-    // 동해안 (동쪽) - 적군본부가 밖에 있도록 조정
-    graphics.lineTo(530, 330);  // 800 * 0.66, 500 * 0.66
-    graphics.lineTo(535, 265);  // 810 * 0.66, 400 * 0.66
-    graphics.lineTo(515, 200);  // 780 * 0.66, 300 * 0.66
-    graphics.lineTo(495, 130);  // 750 * 0.66, 200 * 0.66
-    graphics.lineTo(475, 80);   // 720 * 0.66, 120 * 0.66
+    // 동해안 (동쪽) - 세상(적군본부)이 밖에 있도록 조정
+    graphics.lineTo(490, 380);  // 동해남부
+    graphics.lineTo(480, 320);  // 동해중부
+    graphics.lineTo(470, 260);  // 동해북부  
+    graphics.lineTo(460, 200);  // 강원도 동해안
+    graphics.lineTo(450, 140);  // 속초 근처
     
-    // 북쪽 경계
-    graphics.lineTo(430, 65);   // 650 * 0.66, 100 * 0.66
-    graphics.lineTo(365, 75);   // 550 * 0.66, 110 * 0.66
-    graphics.lineTo(300, 80);   // 450 * 0.66, 120 * 0.66
-    graphics.lineTo(250, 100);  // 380 * 0.66, 150 * 0.66
-    graphics.lineTo(230, 130);  // 350 * 0.66, 200 * 0.66
-    graphics.lineTo(230, 165);  // 350 * 0.66, 250 * 0.66 (시작점으로 복귀)
+    // 북쪽 경계 - 위쪽 여백 확보
+    graphics.lineTo(400, 100);  // DMZ 동쪽
+    graphics.lineTo(350, 90);   // DMZ 중부
+    graphics.lineTo(300, 95);   // DMZ 서쪽
+    graphics.lineTo(250, 105);  // 개성 근처
+    graphics.lineTo(200, 110);  // 파주 근처
+    graphics.lineTo(150, 120);  // 시작점으로 복귀
     
     graphics.closePath();
     graphics.fillPath();
     graphics.strokePath();
 
-    // 제주도 추가 (비율 조정)
+    // 제주도 추가 (위치 조정)
     graphics.fillStyle(0xD2B48C);
-    graphics.fillEllipse(280, 475, 40, 20); // 420 * 0.66, 720 * 0.66, 크기도 축소
-    graphics.strokeEllipse(280, 475, 40, 20);
+    graphics.fillEllipse(250, 570, 35, 18); // 모바일에 맞게 조정
+    graphics.strokeEllipse(250, 570, 35, 18);
   }
 
   private createRegions() {
@@ -488,7 +488,7 @@ export class GameScene extends Phaser.Scene {
 
     this._aiTimer = this.time.addEvent({
       delay: GAME_CONFIG.AI_ACTION_INTERVAL,
-      callback: this.aiTurn,
+      callback: this.aiTurnWithDynamicInterval,
       callbackScope: this,
       loop: true
     });
@@ -508,58 +508,138 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
+  private aiTurnWithDynamicInterval() {
+    this.aiTurn();
+    
+    // 플레이어 지역 수에 따라 AI 간격 동적 조정
+    const playerRegions = Array.from(this.gameState.regions.values())
+      .filter(r => r.owner === 'player');
+    
+    const isLateGame = playerRegions.length >= 5;
+    const newInterval = isLateGame ? 2000 : 4000; // 후반부: 2초, 초반부: 4초
+    
+    // 현재 타이머와 간격이 다르면 타이머 재생성
+    if (this._aiTimer.delay !== newInterval) {
+      this._aiTimer.destroy();
+      this._aiTimer = this.time.addEvent({
+        delay: newInterval,
+        callback: this.aiTurnWithDynamicInterval,
+        callbackScope: this,
+        loop: true
+      });
+    }
+  }
+
   private aiTurn() {
     const redRegions = Array.from(this.gameState.regions.values())
       .filter(r => r.owner === 'red' && r.troopCount > 5);
     
+    const playerRegions = Array.from(this.gameState.regions.values())
+      .filter(r => r.owner === 'player');
+    
+    const neutralRegions = Array.from(this.gameState.regions.values())
+      .filter(r => r.owner === 'neutral');
+    
     if (redRegions.length === 0) return;
     
-    const attackerRegion = redRegions[Math.floor(Math.random() * redRegions.length)];
-    const targetRegions = Array.from(this.gameState.regions.values())
-      .filter(r => r.owner !== 'red');
+    // 게임 후반부 판단 (플레이어가 5개 이상 지역 점령 시)
+    const isLateGame = playerRegions.length >= 5;
     
-    if (targetRegions.length === 0) return;
+    // 후반부에는 더 공격적으로 변함
+    const minTroopCount = isLateGame ? 3 : 5;
+    const attackRatio = isLateGame ? 0.8 : 0.6; // 후반부에는 80% 병력 투입
     
-    const target = targetRegions[Math.floor(Math.random() * targetRegions.length)];
-    
-    const existingAttack = this.gameState.attacks.find(
-      attack => attack.fromRegionId === attackerRegion.id
-    );
-    
-    if (!existingAttack && attackerRegion.troopCount > target.troopCount) {
-      const distance = Math.sqrt(
-        Math.pow(target.x - attackerRegion.x, 2) + 
-        Math.pow(target.y - attackerRegion.y, 2)
+    for (const attackerRegion of redRegions) {
+      if (attackerRegion.troopCount < minTroopCount) continue;
+      
+      // 기존 공격이 있는지 확인
+      const existingAttack = this.gameState.attacks.find(
+        attack => attack.fromRegionId === attackerRegion.id
       );
       
-      const duration = (distance / GAME_CONFIG.ATTACK_SPEED) * 1000;
-      const totalTroopsToSend = Math.floor((attackerRegion.troopCount - 1) * 0.6);
+      if (existingAttack) continue; // 이미 공격 중이면 스킵
       
-      if (totalTroopsToSend > 0) {
-        const attack: Attack = {
-          fromRegionId: attackerRegion.id,
-          toRegionId: target.id,
-          troopCount: totalTroopsToSend,
-          progress: 0,
-          duration: duration,
-          lastTroopSendTime: Date.now() - GAME_CONFIG.TROOP_SEND_INTERVAL,
-          totalTroopsToSend: totalTroopsToSend,
-          troopsSent: 0,
-          movingTroops: []
-        };
+      let targetRegions: Region[] = [];
+      
+      if (isLateGame) {
+        // 후반부: 플레이어 지역을 우선 타겟
+        const playerTargets = playerRegions.filter(r => 
+          this.getDistance(attackerRegion, r) <= GAME_CONFIG.MAX_CONNECTION_DISTANCE * 1.5
+        );
+        targetRegions = playerTargets.length > 0 ? playerTargets : neutralRegions;
+      } else {
+        // 초반부: 중립 지역 우선, 플레이어 견제
+        targetRegions = [...neutralRegions, ...playerRegions];
+      }
+      
+      if (targetRegions.length === 0) continue;
+      
+      // 타겟 선정 로직 개선
+      let target: Region;
+      if (isLateGame) {
+        // 후반부: 가장 가까운 플레이어 지역 우선
+        const playerTargets = targetRegions.filter(r => r.owner === 'player');
+        if (playerTargets.length > 0) {
+          target = playerTargets.reduce((closest, current) => 
+            this.getDistance(attackerRegion, current) < this.getDistance(attackerRegion, closest) 
+              ? current : closest
+          );
+        } else {
+          target = targetRegions[Math.floor(Math.random() * targetRegions.length)];
+        }
+      } else {
+        // 초반부: 약한 지역 우선
+        target = targetRegions.reduce((weakest, current) => 
+          current.troopCount < weakest.troopCount ? current : weakest
+        );
+      }
+      
+      // 공격 가능성 판단
+      const shouldAttack = isLateGame ? 
+        attackerRegion.troopCount > target.troopCount * 0.7 : // 후반부: 더 공격적
+        attackerRegion.troopCount > target.troopCount;        // 초반부: 신중함
+      
+      if (shouldAttack) {
+        const distance = this.getDistance(attackerRegion, target);
+        const duration = (distance / GAME_CONFIG.ATTACK_SPEED) * 1000;
+        const totalTroopsToSend = Math.floor((attackerRegion.troopCount - 1) * attackRatio);
         
-        this.gameState.attacks.push(attack);
-        
-        const connection: Connection = {
-          fromRegionId: attackerRegion.id,
-          toRegionId: target.id,
-          isActive: true,
-          createdTime: Date.now()
-        };
-        
-        this.gameState.connections.push(connection);
+        if (totalTroopsToSend > 0) {
+          const attack: Attack = {
+            fromRegionId: attackerRegion.id,
+            toRegionId: target.id,
+            troopCount: totalTroopsToSend,
+            progress: 0,
+            duration: duration,
+            lastTroopSendTime: Date.now() - GAME_CONFIG.TROOP_SEND_INTERVAL,
+            totalTroopsToSend: totalTroopsToSend,
+            troopsSent: 0,
+            movingTroops: []
+          };
+          
+          this.gameState.attacks.push(attack);
+          
+          const connection: Connection = {
+            fromRegionId: attackerRegion.id,
+            toRegionId: target.id,
+            isActive: true,
+            createdTime: Date.now()
+          };
+          
+          this.gameState.connections.push(connection);
+          
+          // 후반부에는 한 번에 여러 공격 허용
+          if (!isLateGame) break;
+        }
       }
     }
+  }
+  
+  private getDistance(region1: Region, region2: Region): number {
+    return Math.sqrt(
+      Math.pow(region2.x - region1.x, 2) + 
+      Math.pow(region2.y - region1.y, 2)
+    );
   }
 
   private updateAttacks(delta: number) {

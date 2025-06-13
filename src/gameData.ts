@@ -1,13 +1,13 @@
 import { Region, Skill } from './types';
 
-// 한국 지도의 12개 거점 정의 (모바일 최적화)
+// 한국 지도의 12개 거점 정의 (모바일 최적화 - 겹침 방지)
 export const INITIAL_REGIONS: Region[] = [
   {
     id: 'seoul',
     name: '서울',
-    x: 330,  // 500 * 0.66
-    y: 185,  // 280 * 0.66
-    radius: 35,
+    x: 300,  // 중앙
+    y: 200,  
+    radius: 30,
     owner: 'player',
     troopCount: 20,
     baseGrowthRate: 2
@@ -15,9 +15,9 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'taebaek',
     name: '태백',
-    x: 430,  // 650 * 0.66
-    y: 185,  // 280 * 0.66
-    radius: 25,
+    x: 450,  // 오른쪽 위
+    y: 180,  
+    radius: 22,
     owner: 'neutral',
     troopCount: 5,
     baseGrowthRate: 1
@@ -25,9 +25,9 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'icheon',
     name: '이천',
-    x: 385,  // 580 * 0.66
-    y: 225,  // 340 * 0.66
-    radius: 25,
+    x: 380,  // 서울 오른쪽 아래
+    y: 240,  
+    radius: 22,
     owner: 'neutral',
     troopCount: 4,
     baseGrowthRate: 1
@@ -35,9 +35,9 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'busan',
     name: '부산',
-    x: 470,  // 710 * 0.66
-    y: 385,  // 580 * 0.66
-    radius: 28,
+    x: 450,  // 오른쪽 아래
+    y: 450,  
+    radius: 25,
     owner: 'neutral',
     troopCount: 8,
     baseGrowthRate: 1
@@ -45,9 +45,9 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'redbase',
     name: '세상',
-    x: 595,  // 900 * 0.66
-    y: 230,  // 350 * 0.66
-    radius: 40,
+    x: 520,  // 맨 오른쪽
+    y: 300,  
+    radius: 35,
     owner: 'red',
     troopCount: 30,
     baseGrowthRate: 3
@@ -55,9 +55,9 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'yongin',
     name: '용인',
-    x: 305,  // 460 * 0.66
-    y: 240,  // 360 * 0.66
-    radius: 25,
+    x: 240,  // 서울 왼쪽 아래
+    y: 260,  
+    radius: 22,
     owner: 'neutral',
     troopCount: 6,
     baseGrowthRate: 1
@@ -65,9 +65,9 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'gapyeong',
     name: '가평',
-    x: 345,  // 520 * 0.66
-    y: 120,  // 180 * 0.66
-    radius: 25,
+    x: 340,  // 서울 오른쪽 위
+    y: 130,  
+    radius: 22,
     owner: 'neutral',
     troopCount: 3,
     baseGrowthRate: 1
@@ -75,9 +75,9 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'hwaseong',
     name: '화성',
-    x: 250,  // 380 * 0.66
-    y: 280,  // 420 * 0.66
-    radius: 25,
+    x: 180,  // 왼쪽 중간
+    y: 320,  
+    radius: 22,
     owner: 'neutral',
     troopCount: 5,
     baseGrowthRate: 1
@@ -85,9 +85,9 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'goseong',
     name: '고성',
-    x: 395,  // 600 * 0.66
-    y: 370,  // 560 * 0.66
-    radius: 25,
+    x: 380,  // 부산 위쪽
+    y: 400,  
+    radius: 22,
     owner: 'neutral',
     troopCount: 3,
     baseGrowthRate: 1
@@ -95,9 +95,9 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'buan',
     name: '부안',
-    x: 265,  // 400 * 0.66
-    y: 330,  // 500 * 0.66
-    radius: 25,
+    x: 220,  // 왼쪽 아래
+    y: 380,  
+    radius: 22,
     owner: 'neutral',
     troopCount: 4,
     baseGrowthRate: 1
@@ -105,9 +105,9 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'ganghwa',
     name: '강화',
-    x: 280,  // 420 * 0.66
-    y: 170,  // 260 * 0.66
-    radius: 25,
+    x: 240,  // 서울 왼쪽
+    y: 160,  
+    radius: 22,
     owner: 'neutral',
     troopCount: 4,
     baseGrowthRate: 1
@@ -115,9 +115,9 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'namyangju',
     name: '남양주',
-    x: 385,  // 580 * 0.66
-    y: 130,  // 200 * 0.66
-    radius: 25,
+    x: 360,  // 서울 오른쪽
+    y: 160,  
+    radius: 22,
     owner: 'neutral',
     troopCount: 5,
     baseGrowthRate: 1
@@ -125,9 +125,9 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'yesan',
     name: '예산',
-    x: 330,  // 500 * 0.66
-    y: 290,  // 440 * 0.66
-    radius: 25,
+    x: 280,  // 서울 아래
+    y: 320,  
+    radius: 22,
     owner: 'neutral',
     troopCount: 4,
     baseGrowthRate: 1
@@ -188,8 +188,8 @@ export const SKILLS: Skill[] = [
 
 // 게임 상수들
 export const GAME_CONFIG = {
-  CANVAS_WIDTH: 800,
-  CANVAS_HEIGHT: 600,
+  CANVAS_WIDTH: 600,  // 800 → 600으로 더 축소 (모바일 최적화)
+  CANVAS_HEIGHT: 700, // 600 → 700으로 세로 확장 (여유 공간)
   GROWTH_INTERVAL: 2000, // 2초마다 자원 흐름
   CONNECTION_TRANSFER_RATE: 0.1, // 연결당 10% 자원 전송
   ATTACK_SPEED: 30, // 병력표시원 속도 (픽셀/초)
