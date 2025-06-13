@@ -2,18 +2,23 @@
 
 ## 📖 프로젝트 소개
 2025 LFC 교육선교 홍보를 위한 한국 지도 기반 실시간 전략 게임입니다.
-서울에서 시작하여 전국의 거점들을 점령하고 적군본부를 제압하는 것이 목표입니다.
+서울에서 시작하여 전국의 거점들을 점령하고 **세상**을 제압하는 것이 목표입니다.
 
 ## 🎯 게임 특징
-- **12개 거점**: 서울, 태백, 이천, 부산, 용인, 가평, 화성, 고성, 부안, 강화, 남양주, 예산 + 적군본부
+- **12개 거점**: 서울, 태백, 이천, 부산(중립), 용인, 가평, 화성, 고성, 부안, 강화, 남양주, 예산 + 세상
 - **실시간 병력 이동**: 개별 병력이 실제로 이동하며 충돌 감지로 도착 처리
 - **레벨업 스킬 시스템**: 병력 생산 증가, 공격력 강화, 다중 연결 등
 - **AI 적군**: 스마트한 AI가 플레이어와 경쟁
 - **국내선교 연계**: 게임 종료 후 2025 LFC 교육선교 신청 버튼
 
+## 🌐 배포
+- **GitHub**: [https://github.com/SeoulKing/gooksun.git](https://github.com/SeoulKing/gooksun.git)
+- **Netlify**: 자동 배포 설정 완료 (Netlify에서 GitHub 연결 후 즉시 배포 가능)
+
 ## 🛠 기술 스택
 - **Frontend**: Phaser 3, TypeScript, Vite
 - **Backend**: Node.js, Express (정적 파일 서버)
+- **배포**: Netlify (자동 빌드 및 배포)
 - **스타일링**: 순수 CSS (반응형 디자인)
 
 ## 🚀 실행 방법
@@ -47,8 +52,15 @@ npm run server
 ### PowerShell에서 npm 문제 해결
 ```powershell
 # npm이 인식되지 않을 때
-"C:\Program Files\nodejs\npm.cmd" run dev
+& "C:\Program Files\nodejs\npm.cmd" run dev
 ```
+
+### Netlify 배포 방법
+1. [Netlify](https://netlify.com)에 로그인
+2. "New site from Git" 선택
+3. GitHub 연결 후 `SeoulKing/gooksun` 레포지토리 선택
+4. 빌드 설정은 `netlify.toml`에서 자동 감지
+5. Deploy 버튼 클릭 시 자동 배포 완료
 
 ## 🎮 게임 플레이 방법
 
@@ -59,7 +71,7 @@ npm run server
 4. **자원 성장**: 2초마다 모든 지역의 병력 자동 증가
 
 ### 승리/패배 조건
-- **승리**: 적군본부를 제외한 모든 지역 점령
+- **승리**: 세상을 제외한 모든 지역 점령
 - **패배**: 플레이어 소유 지역이 하나도 없을 때
 
 ### 스킬 시스템
@@ -93,13 +105,19 @@ korea-strategy-game/
 │   └── gameData.ts        # 게임 데이터 및 설정
 ├── server/
 │   └── index.js           # Express 정적 파일 서버
+├── netlify.toml           # Netlify 배포 설정
+├── .gitignore             # Git 무시 파일 설정
 ├── package.json           # 프로젝트 설정
 ├── tsconfig.json          # TypeScript 설정
 ├── vite.config.ts         # Vite 설정
 └── README.md              # 프로젝트 문서
 ```
 
-## 🔧 최적화 내용
+## 🔧 최신 최적화 내용
+- **부산 중립화**: 부산이 이제 중립 지역으로 시작
+- **세상 개념**: 적군본부가 "세상"으로 명칭 변경 (더 의미있는 표현)
+- **안정적인 시각 효과**: 이동 병력의 맥박 효과 제거로 더 부드러운 애니메이션
+- **완전한 연결 해제**: 모든 병력 도착 후에만 연결선 해제 (더 정확한 게임 로직)
 - **타입 안정성**: 모든 Phaser 객체에 정확한 타입 적용
 - **메모리 효율성**: 불필요한 객체 생성 방지, 적절한 cleanup
 - **성능 향상**: console.log 제거, 렌더링 최적화
