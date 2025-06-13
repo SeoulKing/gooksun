@@ -15,8 +15,8 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'taebaek',
     name: '태백',
-    x: 380,  // 410 → 380 (외곽선 안으로)
-    y: 180,  
+    x: 400,  // 380 → 400 (남양주와 거리 확보)
+    y: 160,  // 180 → 160 (남양주와 거리 확보)
     radius: 20,
     owner: 'neutral',
     troopCount: 5,
@@ -36,7 +36,7 @@ export const INITIAL_REGIONS: Region[] = [
     id: 'busan',
     name: '부산',
     x: 380,  // 410 → 380 (외곽선 안으로)
-    y: 420,  // 450 → 420 (외곽선 안으로)
+    y: 400,  // 450 → 420 (외곽선 안으로)
     radius: 23,
     owner: 'neutral',
     troopCount: 8,
@@ -46,7 +46,7 @@ export const INITIAL_REGIONS: Region[] = [
     id: 'redbase',
     name: '세상',
     x: 350,  // 300 → 350 (더 오른쪽으로)
-    y: 550,  // 520 → 550 (더 아래로)
+    y: 570,  // 520 → 550 (더 아래로)
     radius: 28,
     owner: 'red',
     troopCount: 30,
@@ -75,7 +75,7 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'hwaseong',
     name: '화성',
-    x: 180,  // 200 → 180 (외곽선 안으로)
+    x: 200,  // 200 → 180 (외곽선 안으로)
     y: 300,  // 320 → 300 (예산과 거리 확보)
     radius: 20,
     owner: 'neutral',
@@ -115,8 +115,8 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'namyangju',
     name: '남양주',
-    x: 370,  // 가평과 거리 확보
-    y: 170,  // 가평과 세로 간격 확보
+    x: 350,  // 370 → 350 (태백과 거리 확보)
+    y: 190,  // 170 → 190 (태백과 거리 확보)
     radius: 20,
     owner: 'neutral',
     troopCount: 5,
