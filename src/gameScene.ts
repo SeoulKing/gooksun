@@ -13,9 +13,9 @@ export class GameScene extends Phaser.Scene {
   private regionNameTexts: Map<string, Phaser.GameObjects.Text> = new Map();
   private isDragging = false;
   private dragStartRegion: Region | null = null;
-  private resourceFlowTimer!: Phaser.Time.TimerEvent;
-  private passiveExpTimer!: Phaser.Time.TimerEvent;
-  private aiTimer!: Phaser.Time.TimerEvent;
+  private _resourceFlowTimer!: Phaser.Time.TimerEvent;
+  private _passiveExpTimer!: Phaser.Time.TimerEvent;
+  private _aiTimer!: Phaser.Time.TimerEvent;
   private animationTime = 0; // 애니메이션 시간 추적
 
   constructor() {
@@ -472,21 +472,21 @@ export class GameScene extends Phaser.Scene {
   }
 
   private startTimers() {
-    this.resourceFlowTimer = this.time.addEvent({
+    this._resourceFlowTimer = this.time.addEvent({
       delay: GAME_CONFIG.GROWTH_INTERVAL,
       callback: this.processResourceFlow,
       callbackScope: this,
       loop: true
     });
 
-    this.passiveExpTimer = this.time.addEvent({
+    this._passiveExpTimer = this.time.addEvent({
       delay: GAME_CONFIG.PASSIVE_EXP_RATE * 1000,
       callback: () => this.addExp(1),
       callbackScope: this,
       loop: true
     });
 
-    this.aiTimer = this.time.addEvent({
+    this._aiTimer = this.time.addEvent({
       delay: GAME_CONFIG.AI_ACTION_INTERVAL,
       callback: this.aiTurn,
       callbackScope: this,
