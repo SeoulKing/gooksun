@@ -137,50 +137,50 @@ export const INITIAL_REGIONS: Region[] = [
 // 스킬 정의
 export const SKILLS: Skill[] = [
   {
-    id: 'production_boost',
-    name: '병력 생산 증가',
-    description: '내 지역의 병력 생산 속도가 50% 증가합니다',
+    id: 'troopProduction',
+    name: '📈 믿음 성장',
+    description: '내 지역의 믿음 성장 속도 +50%',
     apply: (player) => {
       player.productionRateMultiplier += 0.5;
     }
   },
   {
-    id: 'attack_power',
-    name: '공격력 강화',
-    description: '내 병력 1개가 적 병력 2개를 제거할 수 있습니다',
+    id: 'attackPower',
+    name: '⚔️ 진리의 검',
+    description: '내 믿음 1개가 적 2개를 이김',
     apply: (player) => {
       player.attackPowerMultiplier = 2;
     }
   },
   {
-    id: 'growth_boost',
-    name: '자원 흐름 증대',
-    description: '연결된 지역 간 자원 전송량이 50% 증가합니다',
-    apply: (player) => {
-      player.growthRateMultiplier += 0.5;
-    }
-  },
-  {
-    id: 'connection_boost',
-    name: '연결 거리 증대',
-    description: '연결 가능한 거리가 50% 증가합니다',
+    id: 'connectionDistance',
+    name: '🌐 믿음 전파',
+    description: '연결 가능 거리 +50%',
     apply: (player) => {
       player.maxConnectionDistance += 100;
     }
   },
   {
-    id: 'multi_connection',
-    name: '다중 연결',
-    description: '한 지역에서 두 개의 지역과 연결할 수 있습니다',
+    id: 'multiConnection',
+    name: '🔗 다중 전도',
+    description: '한 지역에서 2개 지역과 동시 연결',
     apply: (player) => {
       player.maxConnectionsPerRegion += 1;
     }
   },
   {
-    id: 'exp_boost',
-    name: '경험치 획득 증대',
-    description: '모든 경험치 획득이 50% 증가합니다',
+    id: 'resourceFlow',
+    name: '💰 풍성한 복',
+    description: '모든 자원 흐름 +50%',
     apply: (player) => {
+      player.growthRateMultiplier += 0.5;
+    }
+  },
+  {
+    id: 'expBoost',
+    name: '📚 지혜 증가',
+    description: '모든 경험치 획득 +50%',
+    apply: (_player) => {
       // 이 효과는 경험치 획득 시 적용됩니다
     }
   }

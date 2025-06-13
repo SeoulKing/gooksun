@@ -1,6 +1,6 @@
 // @ts-ignore
 import Phaser from 'phaser';
-import { Region, Player, Connection, Attack, GameState, MovingTroop } from './types';
+import { Region, Connection, Attack, GameState, MovingTroop } from './types';
 import { INITIAL_REGIONS, SKILLS, GAME_CONFIG } from './gameData';
 
 export class GameScene extends Phaser.Scene {
@@ -186,17 +186,6 @@ export class GameScene extends Phaser.Scene {
 
     this.regionTexts.set(region.id, troopText);
     this.regionNameTexts.set(region.id, nameText);
-  }
-
-  private getRegionColors(owner: string) {
-    switch (owner) {
-      case 'player':
-        return { fill: 0x3498db, stroke: 0x2980b9 };
-      case 'red':
-        return { fill: 0xe74c3c, stroke: 0xc0392b };
-      default:
-        return { fill: 0x95a5a6, stroke: 0x7f8c8d };
-    }
   }
 
   private clearRegionTexts(regionId: string) {
@@ -583,7 +572,7 @@ export class GameScene extends Phaser.Scene {
       const toRegion = this.gameState.regions.get(attack.toRegionId);
       if (!fromRegion || !toRegion) return false;
       
-      // 개별 병력 전송
+      // 개별 믿음 전송
       if (currentTime - attack.lastTroopSendTime >= GAME_CONFIG.TROOP_SEND_INTERVAL) {
         if (attack.troopCount > 0 && fromRegion.troopCount > 1) {
           fromRegion.troopCount -= 1;
@@ -608,19 +597,31 @@ export class GameScene extends Phaser.Scene {
         }
       }
       
-      // 공격 종료 조건 확인
+      // 공격 종료 조건 확인 - 모든 믿음이 전송되고 도착했을 때만
       if (attack.troopCount <= 0) {
         const relatedMovingTroops = this.gameState.movingTroops.filter(
-          troop => troop.fromRegionId === attack.fromRegionId && troop.toRegionId === attack.toRegionId
+          troop => troop.fromRegionId === attack.fromRegionId && 
+                  troop.toRegionId === attack.toRegionId &&
+                  !troop.hasArrived
         );
         
+        // 전송할 믿음도 없고, 이동 중인 믿음도 없을 때만 공격 종료
         if (relatedMovingTroops.length === 0) {
           return false;
         }
       }
       
+      // 시간 초과로도 공격 종료하지만, 이동 중인 믿음이 있으면 계속 유지
       if (attack.progress >= 1) {
-        return false;
+        const relatedMovingTroops = this.gameState.movingTroops.filter(
+          troop => troop.fromRegionId === attack.fromRegionId && 
+                  troop.toRegionId === attack.toRegionId &&
+                  !troop.hasArrived
+        );
+        
+        if (relatedMovingTroops.length === 0) {
+          return false;
+        }
       }
       return true;
     });
@@ -737,7 +738,7 @@ export class GameScene extends Phaser.Scene {
 
   private showStartMessage() {
     const startText = this.add.text(GAME_CONFIG.CANVAS_WIDTH / 2, 80, 
-      '🏛️ 서울에서 시작! 드래그해서 병력을 보내세요!',
+      '🙏 서울에서 시작! 드래그해서 믿음을 나눠주세요!',
       {
         fontSize: '20px',
         color: '#000000',
@@ -754,7 +755,7 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
-  update(time: number, delta: number) {
+  update(_time: number, delta: number) {
     if (this.gameState.isGameOver) return;
     
     this.animationTime += delta;
@@ -824,16 +825,38 @@ export class GameScene extends Phaser.Scene {
     
     if (result === '패배!') {
       modal.classList.add('defeat');
-      titleElement.textContent = '💀 패배!';
+      titleElement.textContent = '💔 패배!';
+      
+      // 패배 메시지 동적 생성
+      let messageP = modal.querySelector('p:first-of-type') as HTMLElement;
+      if (!messageP) {
+        messageP = document.createElement('p');
+        modal.insertBefore(messageP, clearTimeElement.parentElement);
+      }
+      messageP.textContent = '세상의 유혹에 넘어졌습니다...';
+      messageP.style.fontWeight = 'bold';
+      messageP.style.fontSize = '16px';
+      messageP.style.margin = '15px 0 20px 0';
     } else {
       titleElement.textContent = '🎊 승리!';
+      
+      // 승리 메시지 동적 생성
+      let messageP = modal.querySelector('p:first-of-type') as HTMLElement;
+      if (!messageP) {
+        messageP = document.createElement('p');
+        modal.insertBefore(messageP, clearTimeElement.parentElement);
+      }
+      messageP.textContent = '한국이 하나님의 나라가 되었습니다!';
+      messageP.style.fontWeight = 'bold';
+      messageP.style.fontSize = '16px';
+      messageP.style.margin = '15px 0 20px 0';
     }
     
     const elapsed = Math.floor((Date.now() - this.gameState.gameStartTime) / 1000);
     const minutes = Math.floor(elapsed / 60);
     const seconds = elapsed % 60;
     
-    clearTimeElement.textContent = `${result} - ${minutes}분 ${seconds}초`;
+    clearTimeElement.textContent = `완주 시간: ${minutes}분 ${seconds}초`;
     modal.style.display = 'block';
     
     this.setupGameOverButtons();
@@ -861,16 +884,31 @@ export class GameScene extends Phaser.Scene {
                  attack.toRegionId === connection.toRegionId
       );
       
+      // 관련된 공격이 없으면 연결 해제
       if (!relatedAttack) {
-        return false;
+        // 하지만 아직 이동 중인 믿음이 있다면 연결 유지
+        const relatedMovingTroops = this.gameState.movingTroops.filter(
+          troop => troop.fromRegionId === connection.fromRegionId && 
+                  troop.toRegionId === connection.toRegionId &&
+                  !troop.hasArrived
+        );
+        
+        if (relatedMovingTroops.length > 0) {
+          return true; // 이동 중인 믿음이 있으면 연결 유지
+        }
+        
+        return false; // 이동 중인 믿음도 없으면 연결 해제
       }
       
+      // 공격이 있다면 모든 믿음이 전송되었는지 확인
       if (relatedAttack.troopCount <= 0) {
         const relatedMovingTroops = this.gameState.movingTroops.filter(
           troop => troop.fromRegionId === connection.fromRegionId && 
-                  troop.toRegionId === connection.toRegionId
+                  troop.toRegionId === connection.toRegionId &&
+                  !troop.hasArrived
         );
         
+        // 모든 믿음이 도착했으면 연결 해제
         if (relatedMovingTroops.length === 0) {
           return false;
         }
