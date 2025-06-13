@@ -1,7 +1,7 @@
 {
-  "name": "korea-strategy-game",
+  "name": "gooksungaja",
   "version": "1.0.0",
-  "description": "한국 지도 기반 실시간 전략 게임 - 2025 LFC 교육선교 홍보용",
+  "description": "국선가자 - 한국 전역에 믿음을 나누는 게임",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -21,7 +21,7 @@
     "typescript": "^5.0.0",
     "vite": "^4.4.0"
   },
-  "keywords": ["게임", "전략", "한국", "선교", "phaser", "typescript"],
+  "keywords": ["국선가자", "게임", "전략", "한국", "선교", "phaser", "typescript"],
   "author": "LFC 교육선교팀",
   "license": "MIT"
 } 

@@ -85,47 +85,47 @@ export class GameScene extends Phaser.Scene {
     graphics.lineStyle(4, 0x8B7D6B); // 어두운 베이지
     graphics.fillStyle(0xE6E6C2); // 연한 베이지
     
-    // 한국 지도 남한 윤곽선 (적군본부가 밖에 있도록 조정)
+    // 한국 지도 남한 윤곽선 (모바일 최적화 - 비율 0.66 적용)
     graphics.beginPath();
     
     // 서해안 (서쪽)
-    graphics.moveTo(350, 250);  // 강화도 근처
-    graphics.lineTo(320, 300);  // 인천 근처
-    graphics.lineTo(310, 380);  // 서해안 중부
-    graphics.lineTo(330, 450);  // 서해안 남부
-    graphics.lineTo(350, 520);  // 전남 서해안
-    graphics.lineTo(380, 580);  // 목포 근처
+    graphics.moveTo(230, 165);  // 350 * 0.66, 250 * 0.66
+    graphics.lineTo(210, 200);  // 320 * 0.66, 300 * 0.66
+    graphics.lineTo(205, 250);  // 310 * 0.66, 380 * 0.66
+    graphics.lineTo(220, 300);  // 330 * 0.66, 450 * 0.66
+    graphics.lineTo(230, 345);  // 350 * 0.66, 520 * 0.66
+    graphics.lineTo(250, 385);  // 380 * 0.66, 580 * 0.66
     
     // 남해안 (남쪽)
-    graphics.lineTo(450, 620);  // 전남 남해안
-    graphics.lineTo(550, 650);  // 경남 남해안
-    graphics.lineTo(650, 640);  // 부산 근처
-    graphics.lineTo(720, 620);  // 울산 근처
-    graphics.lineTo(780, 590);  // 동해남부선
+    graphics.lineTo(300, 410);  // 450 * 0.66, 620 * 0.66
+    graphics.lineTo(365, 430);  // 550 * 0.66, 650 * 0.66
+    graphics.lineTo(430, 425);  // 650 * 0.66, 640 * 0.66
+    graphics.lineTo(475, 410);  // 720 * 0.66, 620 * 0.66
+    graphics.lineTo(515, 390);  // 780 * 0.66, 590 * 0.66
     
     // 동해안 (동쪽) - 적군본부가 밖에 있도록 조정
-    graphics.lineTo(800, 500);  // 경북 동해안
-    graphics.lineTo(810, 400);  // 강원 동해안 남부
-    graphics.lineTo(780, 300);  // 강원 동해안 중부
-    graphics.lineTo(750, 200);  // 강원 동해안 북부
-    graphics.lineTo(720, 120);  // 속초 근처
+    graphics.lineTo(530, 330);  // 800 * 0.66, 500 * 0.66
+    graphics.lineTo(535, 265);  // 810 * 0.66, 400 * 0.66
+    graphics.lineTo(515, 200);  // 780 * 0.66, 300 * 0.66
+    graphics.lineTo(495, 130);  // 750 * 0.66, 200 * 0.66
+    graphics.lineTo(475, 80);   // 720 * 0.66, 120 * 0.66
     
     // 북쪽 경계
-    graphics.lineTo(650, 100);  // DMZ 동쪽
-    graphics.lineTo(550, 110);  // DMZ 중부
-    graphics.lineTo(450, 120);  // DMZ 서쪽
-    graphics.lineTo(380, 150);  // 개성 근처
-    graphics.lineTo(350, 200);  // 파주 근처
-    graphics.lineTo(350, 250);  // 시작점으로 복귀
+    graphics.lineTo(430, 65);   // 650 * 0.66, 100 * 0.66
+    graphics.lineTo(365, 75);   // 550 * 0.66, 110 * 0.66
+    graphics.lineTo(300, 80);   // 450 * 0.66, 120 * 0.66
+    graphics.lineTo(250, 100);  // 380 * 0.66, 150 * 0.66
+    graphics.lineTo(230, 130);  // 350 * 0.66, 200 * 0.66
+    graphics.lineTo(230, 165);  // 350 * 0.66, 250 * 0.66 (시작점으로 복귀)
     
     graphics.closePath();
     graphics.fillPath();
     graphics.strokePath();
 
-    // 제주도 추가
+    // 제주도 추가 (비율 조정)
     graphics.fillStyle(0xD2B48C);
-    graphics.fillEllipse(420, 720, 60, 30);
-    graphics.strokeEllipse(420, 720, 60, 30);
+    graphics.fillEllipse(280, 475, 40, 20); // 420 * 0.66, 720 * 0.66, 크기도 축소
+    graphics.strokeEllipse(280, 475, 40, 20);
   }
 
   private createRegions() {
@@ -571,6 +571,13 @@ export class GameScene extends Phaser.Scene {
       const fromRegion = this.gameState.regions.get(attack.fromRegionId);
       const toRegion = this.gameState.regions.get(attack.toRegionId);
       if (!fromRegion || !toRegion) return false;
+      
+      // 5초 시간 제한 확인
+      const attackStartTime = attack.lastTroopSendTime - GAME_CONFIG.TROOP_SEND_INTERVAL;
+      const elapsedTime = currentTime - attackStartTime;
+      if (elapsedTime >= GAME_CONFIG.MAX_ATTACK_DURATION) {
+        return false; // 5초 경과 시 공격 종료
+      }
       
       // 개별 믿음 전송
       if (currentTime - attack.lastTroopSendTime >= GAME_CONFIG.TROOP_SEND_INTERVAL) {

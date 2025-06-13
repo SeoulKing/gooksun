@@ -1,12 +1,12 @@
 import { Region, Skill } from './types';
 
-// 한국 지도의 12개 거점 정의
+// 한국 지도의 12개 거점 정의 (모바일 최적화)
 export const INITIAL_REGIONS: Region[] = [
   {
     id: 'seoul',
     name: '서울',
-    x: 500,
-    y: 280,
+    x: 330,  // 500 * 0.66
+    y: 185,  // 280 * 0.66
     radius: 35,
     owner: 'player',
     troopCount: 20,
@@ -15,8 +15,8 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'taebaek',
     name: '태백',
-    x: 650,
-    y: 280,
+    x: 430,  // 650 * 0.66
+    y: 185,  // 280 * 0.66
     radius: 25,
     owner: 'neutral',
     troopCount: 5,
@@ -25,8 +25,8 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'icheon',
     name: '이천',
-    x: 580,
-    y: 340,
+    x: 385,  // 580 * 0.66
+    y: 225,  // 340 * 0.66
     radius: 25,
     owner: 'neutral',
     troopCount: 4,
@@ -35,8 +35,8 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'busan',
     name: '부산',
-    x: 710,
-    y: 580,
+    x: 470,  // 710 * 0.66
+    y: 385,  // 580 * 0.66
     radius: 28,
     owner: 'neutral',
     troopCount: 8,
@@ -45,8 +45,8 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'redbase',
     name: '세상',
-    x: 900,
-    y: 350,
+    x: 595,  // 900 * 0.66
+    y: 230,  // 350 * 0.66
     radius: 40,
     owner: 'red',
     troopCount: 30,
@@ -55,8 +55,8 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'yongin',
     name: '용인',
-    x: 460,
-    y: 360,
+    x: 305,  // 460 * 0.66
+    y: 240,  // 360 * 0.66
     radius: 25,
     owner: 'neutral',
     troopCount: 6,
@@ -65,8 +65,8 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'gapyeong',
     name: '가평',
-    x: 520,
-    y: 180,
+    x: 345,  // 520 * 0.66
+    y: 120,  // 180 * 0.66
     radius: 25,
     owner: 'neutral',
     troopCount: 3,
@@ -75,8 +75,8 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'hwaseong',
     name: '화성',
-    x: 380,
-    y: 420,
+    x: 250,  // 380 * 0.66
+    y: 280,  // 420 * 0.66
     radius: 25,
     owner: 'neutral',
     troopCount: 5,
@@ -85,8 +85,8 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'goseong',
     name: '고성',
-    x: 600,
-    y: 560,
+    x: 395,  // 600 * 0.66
+    y: 370,  // 560 * 0.66
     radius: 25,
     owner: 'neutral',
     troopCount: 3,
@@ -95,8 +95,8 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'buan',
     name: '부안',
-    x: 400,
-    y: 500,
+    x: 265,  // 400 * 0.66
+    y: 330,  // 500 * 0.66
     radius: 25,
     owner: 'neutral',
     troopCount: 4,
@@ -105,8 +105,8 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'ganghwa',
     name: '강화',
-    x: 420,
-    y: 260,
+    x: 280,  // 420 * 0.66
+    y: 170,  // 260 * 0.66
     radius: 25,
     owner: 'neutral',
     troopCount: 4,
@@ -115,8 +115,8 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'namyangju',
     name: '남양주',
-    x: 580,
-    y: 200,
+    x: 385,  // 580 * 0.66
+    y: 130,  // 200 * 0.66
     radius: 25,
     owner: 'neutral',
     troopCount: 5,
@@ -125,8 +125,8 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'yesan',
     name: '예산',
-    x: 500,
-    y: 440,
+    x: 330,  // 500 * 0.66
+    y: 290,  // 440 * 0.66
     radius: 25,
     owner: 'neutral',
     troopCount: 4,
@@ -188,8 +188,8 @@ export const SKILLS: Skill[] = [
 
 // 게임 상수들
 export const GAME_CONFIG = {
-  CANVAS_WIDTH: 1200,
-  CANVAS_HEIGHT: 800,
+  CANVAS_WIDTH: 800,
+  CANVAS_HEIGHT: 600,
   GROWTH_INTERVAL: 2000, // 2초마다 자원 흐름
   CONNECTION_TRANSFER_RATE: 0.1, // 연결당 10% 자원 전송
   ATTACK_SPEED: 30, // 병력표시원 속도 (픽셀/초)
@@ -200,5 +200,6 @@ export const GAME_CONFIG = {
   AI_ACTION_INTERVAL: 4000, // AI 행동 간격 4초
   TARGET_CLEAR_TIME: 300, // 목표 클리어 시간 5분
   MAX_CONNECTION_DISTANCE: 200, // 최대 연결 가능 거리
-  AUTO_DISCONNECT_TIME: 5000 // 5초 후 자동 연결 해제
+  AUTO_DISCONNECT_TIME: 5000, // 5초 후 자동 연결 해제
+  MAX_ATTACK_DURATION: 5000 // 최대 공격 지속 시간 5초
 }; 
