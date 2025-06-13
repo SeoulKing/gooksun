@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>한국 지도 전략 게임</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background: #F5F5DC; /* 게임과 같은 연한 베이지색 */
+            font-family: 'Noto Sans KR', Arial, sans-serif;
+            overflow: hidden;
+        }
+        
+        #game-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #ui-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #2c3e50; /* 베이지 배경에 맞게 어두운 색 */
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        #ui-overlay div {
+            margin: 8px 0;
+        }
+
+        .level-up-modal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            color: white;
+            z-index: 200;
+            display: none;
+            border: 3px solid #3498db;
+            text-align: center;
+        }
+
+        .level-up-modal h3 {
+            color: #3498db;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        .skill-button {
+            display: block;
+            width: 250px;
+            margin: 15px auto;
+            padding: 15px;
+            background: linear-gradient(145deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .skill-button:hover {
+            background: linear-gradient(145deg, #2980b9, #1f618d);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .game-over-modal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, rgba(173, 216, 230, 0.95), rgba(135, 206, 235, 0.9));
+            padding: 40px;
+            border-radius: 15px;
+            color: #2c3e50;
+            z-index: 300;
+            display: none;
+            text-align: center;
+            border: 3px solid #87CEEB;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .game-over-modal.defeat {
+            background: linear-gradient(135deg, rgba(255, 182, 193, 0.95), rgba(255, 160, 160, 0.9));
+            border: 3px solid #FFB6C1;
+        }
+
+        .game-over-modal h2 {
+            color: #2980b9;
+            font-size: 32px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-over-modal.defeat h2 {
+            color: #DC143C;
+        }
+
+        .game-over-modal button {
+            padding: 12px 20px;
+            font-size: 16px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .game-over-modal button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-over-modal.defeat button {
+            background: #DC143C;
+        }
+
+        .game-over-modal.defeat button:hover {
+            background: #B22222;
+        }
+
+        /* 국내선교 버튼 전용 스타일 */
+        #apply-mission {
+            background: #27ae60 !important;
+            font-weight: bold !important;
+            padding: 14px 18px !important;
+            font-size: 15px !important;
+            border: 2px solid #229954 !important;
+        }
+
+        #apply-mission:hover {
+            background: #229954 !important;
+            border-color: #1e8449 !important;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .dev-buttons {
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .dev-button {
+            display: inline-block;
+            padding: 6px 12px;
+            margin: 3px;
+            background: #27ae60;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .dev-button:hover {
+            background: #229954;
+        }
+
+        .dev-button.lose {
+            background: #e74c3c;
+        }
+
+        .dev-button.lose:hover {
+            background: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container"></div>
+    
+    <div id="ui-overlay">
+        <div>🏛️ 레벨: <span id="level">1</span></div>
+        <div>⭐ 경험치: <span id="exp">0</span></div>
+        <div>⏰ 시간: <span id="timer">00:00</span></div>
+        
+        <div class="dev-buttons">
+            <div style="font-size: 11px; margin-bottom: 8px; opacity: 0.7;">개발용 테스트:</div>
+            <button class="dev-button" id="instant-win">즉시 승리</button>
+            <button class="dev-button lose" id="instant-lose">즉시 패배</button>
+        </div>
+    </div>
+
+    <div id="level-up-modal" class="level-up-modal">
+        <h3>🎉 레벨업! 스킬을 선택하세요</h3>
+        <div id="skill-options"></div>
+    </div>
+
+    <div id="game-over-modal" class="game-over-modal">
+        <h2>🎊 승리!</h2>
+        <p style="font-size: 18px; margin: 20px 0;">클리어 시간: <span id="clear-time"></span></p>
+        
+        <div class="button-container">
+            <button id="apply-mission" onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSc8EfnSx4Tv_eXfILB0LLd9siCWqZcuS7YCjSze6NZWPh6n0A/viewform?fbzx=6698662008222996453', '_blank')">🙏 국내선교 신청하러 가기</button>
+            <button id="restart-game">🔄 다시 시작</button>
+        </div>
+    </div>
+
+    <script type="module" src="./main.ts"></script>
+</body>
+</html> 
