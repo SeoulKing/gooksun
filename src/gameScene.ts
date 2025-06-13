@@ -82,41 +82,41 @@ export class GameScene extends Phaser.Scene {
   }
 
   private drawKoreaOutline(graphics: Phaser.GameObjects.Graphics) {
-    graphics.lineStyle(4, 0x8B7D6B); // 어두운 베이지
+    graphics.lineStyle(3, 0x8B7D6B); // 선 두께를 조금 줄임
     graphics.fillStyle(0xE6E6C2); // 연한 베이지
     
     // 한국 지도 남한 윤곽선 (모바일 최적화 - 모든 지역이 내부에 위치)
     graphics.beginPath();
     
     // 서해안 (서쪽) - 왼쪽 여백 확보
-    graphics.moveTo(150, 120);  // 시작점
-    graphics.lineTo(140, 180);  // 서해안 상부
-    graphics.lineTo(130, 240);  // 서해안 중부
-    graphics.lineTo(140, 300);  // 서해안 남부
-    graphics.lineTo(160, 360);  // 서해안 하부
-    graphics.lineTo(180, 420);  // 목포 근처
+    graphics.moveTo(160, 130);  // 시작점
+    graphics.lineTo(150, 190);  // 서해안 상부
+    graphics.lineTo(140, 250);  // 서해안 중부
+    graphics.lineTo(150, 310);  // 서해안 남부
+    graphics.lineTo(170, 370);  // 서해안 하부
+    graphics.lineTo(190, 430);  // 목포 근처
     
     // 남해안 (남쪽) - 아래쪽 여백 확보  
-    graphics.lineTo(240, 480);  // 전남 남해안
-    graphics.lineTo(320, 500);  // 경남 남해안 중부
-    graphics.lineTo(400, 490);  // 경남 남해안 동부
-    graphics.lineTo(470, 470);  // 부산 근처
-    graphics.lineTo(500, 440);  // 울산 근처
+    graphics.lineTo(250, 500);  // 전남 남해안
+    graphics.lineTo(330, 520);  // 경남 남해안 중부
+    graphics.lineTo(410, 510);  // 경남 남해안 동부
+    graphics.lineTo(460, 490);  // 부산 근처
+    graphics.lineTo(480, 460);  // 울산 근처
     
     // 동해안 (동쪽) - 세상(적군본부)이 밖에 있도록 조정
-    graphics.lineTo(490, 380);  // 동해남부
-    graphics.lineTo(480, 320);  // 동해중부
-    graphics.lineTo(470, 260);  // 동해북부  
-    graphics.lineTo(460, 200);  // 강원도 동해안
-    graphics.lineTo(450, 140);  // 속초 근처
+    graphics.lineTo(470, 400);  // 동해남부
+    graphics.lineTo(460, 340);  // 동해중부
+    graphics.lineTo(450, 280);  // 동해북부  
+    graphics.lineTo(440, 220);  // 강원도 동해안
+    graphics.lineTo(430, 160);  // 속초 근처
     
     // 북쪽 경계 - 위쪽 여백 확보
-    graphics.lineTo(400, 100);  // DMZ 동쪽
-    graphics.lineTo(350, 90);   // DMZ 중부
-    graphics.lineTo(300, 95);   // DMZ 서쪽
-    graphics.lineTo(250, 105);  // 개성 근처
-    graphics.lineTo(200, 110);  // 파주 근처
-    graphics.lineTo(150, 120);  // 시작점으로 복귀
+    graphics.lineTo(380, 120);  // DMZ 동쪽
+    graphics.lineTo(340, 110);  // DMZ 중부
+    graphics.lineTo(290, 115);  // DMZ 서쪽
+    graphics.lineTo(250, 125);  // 개성 근처
+    graphics.lineTo(200, 130);  // 파주 근처
+    graphics.lineTo(160, 130);  // 시작점으로 복귀
     
     graphics.closePath();
     graphics.fillPath();
@@ -124,8 +124,8 @@ export class GameScene extends Phaser.Scene {
 
     // 제주도 추가 (위치 조정)
     graphics.fillStyle(0xD2B48C);
-    graphics.fillEllipse(250, 570, 35, 18); // 모바일에 맞게 조정
-    graphics.strokeEllipse(250, 570, 35, 18);
+    graphics.fillEllipse(250, 600, 30, 15); // 크기도 조금 줄임
+    graphics.strokeEllipse(250, 600, 30, 15);
   }
 
   private createRegions() {
@@ -165,19 +165,19 @@ export class GameScene extends Phaser.Scene {
     
     // 병력 수 텍스트 (새로 생성)
     const troopText = this.add.text(region.x, region.y, Math.floor(region.troopCount).toString(), {
-      fontSize: '22px',
+      fontSize: '18px',
       color: '#ffffff',
       fontStyle: 'bold',
       stroke: '#000000',
-      strokeThickness: 5,
+      strokeThickness: 4,
       fontFamily: 'Noto Sans KR, Arial'
     }).setOrigin(0.5);
 
     // 거점 이름 (원과 훨씬 더 가깝게)
-    const nameY = region.y - region.radius - 12; // 더 가깝게 (20에서 12로)
+    const nameY = region.y - region.radius - 10;
     const nameText = this.add.text(region.x, nameY, region.name, {
-      fontSize: '14px', // 폰트 크기도 약간 줄여서 겹침 방지
-      color: '#000000', // 베이지 배경에서 검은색이 더 잘 보임
+      fontSize: '12px',
+      color: '#000000',
       fontStyle: 'bold',
       stroke: '#ffffff',
       strokeThickness: 2,
@@ -827,7 +827,7 @@ export class GameScene extends Phaser.Scene {
     const startText = this.add.text(GAME_CONFIG.CANVAS_WIDTH / 2, 80, 
       '🙏 서울에서 시작! 드래그해서 믿음을 나눠주세요!',
       {
-        fontSize: '20px',
+        fontSize: '16px',
         color: '#000000',
         fontStyle: 'bold',
         stroke: '#ffffff',

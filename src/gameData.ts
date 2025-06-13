@@ -6,8 +6,8 @@ export const INITIAL_REGIONS: Region[] = [
     id: 'seoul',
     name: '서울',
     x: 300,  // 중앙
-    y: 200,  
-    radius: 30,
+    y: 220,  // 조금 아래로
+    radius: 28,  // 서울도 조금 작게
     owner: 'player',
     troopCount: 20,
     baseGrowthRate: 2
@@ -16,8 +16,8 @@ export const INITIAL_REGIONS: Region[] = [
     id: 'taebaek',
     name: '태백',
     x: 450,  // 오른쪽 위
-    y: 180,  
-    radius: 22,
+    y: 200,  
+    radius: 20,
     owner: 'neutral',
     troopCount: 5,
     baseGrowthRate: 1
@@ -26,8 +26,8 @@ export const INITIAL_REGIONS: Region[] = [
     id: 'icheon',
     name: '이천',
     x: 380,  // 서울 오른쪽 아래
-    y: 240,  
-    radius: 22,
+    y: 260,  
+    radius: 20,
     owner: 'neutral',
     troopCount: 4,
     baseGrowthRate: 1
@@ -35,9 +35,9 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'busan',
     name: '부산',
-    x: 450,  // 오른쪽 아래
-    y: 450,  
-    radius: 25,
+    x: 430,  // 오른쪽 아래
+    y: 470,  
+    radius: 23,
     owner: 'neutral',
     troopCount: 8,
     baseGrowthRate: 1
@@ -45,9 +45,9 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'redbase',
     name: '세상',
-    x: 520,  // 맨 오른쪽
-    y: 300,  
-    radius: 35,
+    x: 510,  // 맨 오른쪽
+    y: 320,  
+    radius: 28,  // 35 → 28로 축소
     owner: 'red',
     troopCount: 30,
     baseGrowthRate: 3
@@ -56,8 +56,8 @@ export const INITIAL_REGIONS: Region[] = [
     id: 'yongin',
     name: '용인',
     x: 240,  // 서울 왼쪽 아래
-    y: 260,  
-    radius: 22,
+    y: 280,  
+    radius: 20,
     owner: 'neutral',
     troopCount: 6,
     baseGrowthRate: 1
@@ -66,8 +66,8 @@ export const INITIAL_REGIONS: Region[] = [
     id: 'gapyeong',
     name: '가평',
     x: 340,  // 서울 오른쪽 위
-    y: 130,  
-    radius: 22,
+    y: 150,  
+    radius: 20,
     owner: 'neutral',
     troopCount: 3,
     baseGrowthRate: 1
@@ -76,8 +76,8 @@ export const INITIAL_REGIONS: Region[] = [
     id: 'hwaseong',
     name: '화성',
     x: 180,  // 왼쪽 중간
-    y: 320,  
-    radius: 22,
+    y: 340,  
+    radius: 20,
     owner: 'neutral',
     troopCount: 5,
     baseGrowthRate: 1
@@ -85,9 +85,9 @@ export const INITIAL_REGIONS: Region[] = [
   {
     id: 'goseong',
     name: '고성',
-    x: 380,  // 부산 위쪽
-    y: 400,  
-    radius: 22,
+    x: 360,  // 부산 위쪽 왼쪽
+    y: 420,  
+    radius: 20,
     owner: 'neutral',
     troopCount: 3,
     baseGrowthRate: 1
@@ -96,8 +96,8 @@ export const INITIAL_REGIONS: Region[] = [
     id: 'buan',
     name: '부안',
     x: 220,  // 왼쪽 아래
-    y: 380,  
-    radius: 22,
+    y: 400,  
+    radius: 20,
     owner: 'neutral',
     troopCount: 4,
     baseGrowthRate: 1
@@ -106,8 +106,8 @@ export const INITIAL_REGIONS: Region[] = [
     id: 'ganghwa',
     name: '강화',
     x: 240,  // 서울 왼쪽
-    y: 160,  
-    radius: 22,
+    y: 180,  
+    radius: 20,
     owner: 'neutral',
     troopCount: 4,
     baseGrowthRate: 1
@@ -116,8 +116,8 @@ export const INITIAL_REGIONS: Region[] = [
     id: 'namyangju',
     name: '남양주',
     x: 360,  // 서울 오른쪽
-    y: 160,  
-    radius: 22,
+    y: 180,  
+    radius: 20,
     owner: 'neutral',
     troopCount: 5,
     baseGrowthRate: 1
@@ -126,8 +126,8 @@ export const INITIAL_REGIONS: Region[] = [
     id: 'yesan',
     name: '예산',
     x: 280,  // 서울 아래
-    y: 320,  
-    radius: 22,
+    y: 340,  
+    radius: 20,
     owner: 'neutral',
     troopCount: 4,
     baseGrowthRate: 1
